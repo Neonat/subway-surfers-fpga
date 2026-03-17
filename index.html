@@ -470,7 +470,7 @@
     <button class="start-btn" onclick="startSession()" style="margin-top:8px;font-size:18px;padding:12px 28px;">PLAY AGAIN</button>
   </div>
 
-  <div class="key-hint">P1: A/D keys &nbsp;|&nbsp; P2: ←/→ keys &nbsp;|&nbsp; SPACE: start</div>
+  <div class="key-hint">P1: A/D keys &nbsp;|&nbsp; P2: ← / → arrow keys &nbsp;|&nbsp; SPACE: start</div>
 </div>
 
 <script>
@@ -787,8 +787,12 @@ document.addEventListener('keydown', e => {
   switch(e.key) {
     case 'a': case 'A': p1Left();  flashBtn('p1left');  break;
     case 'd': case 'D': p1Right(); flashBtn('p1right'); break;
+    case 'w': case 'W': break;
+    case 's': case 'S': break;
     case 'ArrowLeft':  e.preventDefault(); p2Left();  flashBtn('p2left');  break;
     case 'ArrowRight': e.preventDefault(); p2Right(); flashBtn('p2right'); break;
+    case 'ArrowUp':    e.preventDefault(); break;
+    case 'ArrowDown':  e.preventDefault(); break;
     case ' ': e.preventDefault(); startSession(); break;
   }
 });
