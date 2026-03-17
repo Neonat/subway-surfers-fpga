@@ -4,28 +4,23 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Subway Surfers Arcade</title>
-<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Russo+One&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
   :root {
-    --green-neon: #39ff14;
-    --green-glow: #00cc00;
-    --amber: #ffaa00;
-    --amber-dark: #cc7700;
-    --amber-glow: rgba(255,170,0,0.6);
-    --blue-neon: #00cfff;
-    --bg-dark: #0a0a0f;
-    --bg-panel: #12121a;
-    --metal: #2a2a35;
-    --metal-light: #3a3a48;
-    --text-bright: #ffffff;
-    --red-death: #ff3322;
+    --tron-cyan: #00f0ff;
+    --tron-orange: #ff6a00;
+    --bg-dark: #00070f;
+    --metal: #0a1a2a;
+    --metal-light: #0d2a3a;
+    --grid-line: rgba(0,200,255,0.1);
+    --red-death: #ff2211;
   }
 
   * { margin:0; padding:0; box-sizing:border-box; }
 
   body {
-    background: var(--bg-dark);
-    font-family: 'Russo One', sans-serif;
+    background-color: var(--bg-dark);
+    font-family: 'Orbitron', sans-serif;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -33,377 +28,366 @@
     justify-content: flex-start;
     overflow-x: hidden;
     background-image:
-      radial-gradient(ellipse at 20% 50%, rgba(0,100,50,0.08) 0%, transparent 60%),
-      radial-gradient(ellipse at 80% 50%, rgba(0,80,120,0.08) 0%, transparent 60%);
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px),
+      radial-gradient(ellipse at 50% 110%, rgba(0,180,255,0.12) 0%, transparent 55%),
+      radial-gradient(ellipse at 50% -10%, rgba(0,80,140,0.10) 0%, transparent 50%);
+    background-size: 44px 44px, 44px 44px, 100% 100%, 100% 100%;
   }
 
-  /* ── MARQUEE ── */
   .marquee {
     width: 100%;
     max-width: 900px;
     text-align: center;
-    padding: 18px 0 8px;
+    padding: 22px 0 14px;
     position: relative;
   }
   .marquee h1 {
-    font-family: 'Bangers', cursive;
-    font-size: clamp(48px, 8vw, 90px);
-    letter-spacing: 4px;
-    background: linear-gradient(180deg, #ffe066 0%, #ff9900 40%, #ff4400 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    filter: drop-shadow(0 0 18px rgba(255,140,0,0.7)) drop-shadow(0 0 40px rgba(255,80,0,0.4));
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    font-size: clamp(22px, 5vw, 56px);
+    letter-spacing: 10px;
+    text-transform: uppercase;
+    color: var(--tron-cyan);
+    text-shadow:
+      0 0 6px var(--tron-cyan),
+      0 0 18px var(--tron-cyan),
+      0 0 45px rgba(0,240,255,0.45),
+      0 0 90px rgba(0,200,255,0.18);
     line-height: 1;
+    animation: flicker 9s infinite;
+  }
+  .marquee-sub {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 7px;
+    color: rgba(0,240,255,0.35);
+    margin-top: 6px;
+    text-transform: uppercase;
+  }
+  @keyframes flicker {
+    0%,93%,95%,97%,100%{opacity:1;}
+    94%{opacity:0.82;}
+    96%{opacity:0.91;}
+    98%{opacity:0.86;}
   }
   .marquee-glow {
     position: absolute;
-    bottom: 0; left: 10%; right: 10%;
-    height: 3px;
-    background: var(--green-neon);
-    box-shadow: 0 0 12px var(--green-neon), 0 0 30px var(--green-neon);
-    border-radius: 2px;
+    bottom: 0; left: 6%; right: 6%;
+    height: 1px;
+    background: var(--tron-cyan);
+    box-shadow: 0 0 6px var(--tron-cyan), 0 0 18px var(--tron-cyan);
   }
 
-  /* ── CABINET BODY ── */
   .cabinet {
     width: 100%;
     max-width: 900px;
-    background: linear-gradient(180deg, #1a1a28 0%, #13131e 100%);
-    border: 2px solid var(--metal-light);
-    border-radius: 18px;
+    background: linear-gradient(180deg, #000d1a 0%, #00070f 100%);
+    border: 1px solid rgba(0,240,255,0.22);
+    border-radius: 3px;
     padding: 20px 16px 24px;
     position: relative;
     box-shadow:
-      0 0 0 1px rgba(255,255,255,0.05),
-      0 20px 60px rgba(0,0,0,0.8),
-      inset 0 1px 0 rgba(255,255,255,0.07);
+      0 0 0 1px rgba(0,240,255,0.05),
+      0 0 40px rgba(0,180,255,0.07),
+      0 24px 70px rgba(0,0,0,0.92),
+      inset 0 1px 0 rgba(0,240,255,0.07);
   }
 
-  /* ── GAME AREA ── */
   .game-area {
     display: flex;
     align-items: flex-start;
     justify-content: center;
-    gap: 0;
-    position: relative;
   }
 
-  /* ── PLAYER SECTION ── */
   .player-section {
     flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 12px;
-    padding: 0 12px;
+    padding: 0 10px;
   }
 
   .player-label {
-    font-family: 'Bangers', cursive;
-    font-size: 22px;
-    letter-spacing: 2px;
-    color: var(--green-neon);
-    text-shadow: 0 0 10px var(--green-neon);
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 4px;
+    color: var(--tron-cyan);
+    text-shadow: 0 0 8px var(--tron-cyan);
+    text-transform: uppercase;
   }
 
-  /* ── CUBE GRID ── */
   .cube-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(5, 1fr);
-    gap: 8px;
+    gap: 6px;
     width: 100%;
     max-width: 280px;
   }
 
   .cube {
     aspect-ratio: 1;
-    border-radius: 6px;
-    background: #1c1c28;
-    border: 1.5px solid #2a2a3a;
+    border-radius: 3px;
+    background: #020d16;
+    border: 1px solid rgba(0,180,255,0.13);
     position: relative;
-    transition: background 0.06s, box-shadow 0.06s, border-color 0.06s;
+    transition: background 0.05s, box-shadow 0.05s, border-color 0.05s;
     overflow: hidden;
   }
-
-  /* Cube face illusion */
   .cube::before {
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, transparent 50%);
-    border-radius: 5px;
+    background: linear-gradient(135deg, rgba(0,240,255,0.04) 0%, transparent 55%);
   }
-  .cube::after {
-    content: '';
-    position: absolute;
-    bottom: 0; right: 0;
-    width: 30%; height: 30%;
-    background: rgba(0,0,0,0.3);
-    border-radius: 0 0 5px 0;
-  }
-
   .cube.lit {
     background: radial-gradient(circle at 35% 35%, #ffe599, #ffaa00 60%, #cc6600);
-    border-color: #ffcc44;
-    box-shadow:
-      0 0 8px var(--amber-glow),
-      0 0 20px rgba(255,140,0,0.5),
-      inset 0 0 12px rgba(255,220,100,0.3);
+    border-color: rgba(255,200,60,0.8);
+    box-shadow: 0 0 6px rgba(255,170,0,0.7), 0 0 18px rgba(255,130,0,0.4), inset 0 0 10px rgba(255,220,100,0.25);
   }
-
   .cube.danger {
-    background: radial-gradient(circle at 35% 35%, #ff9999, #ff3322 60%, #990000);
-    border-color: #ff5544;
-    box-shadow:
-      0 0 8px rgba(255,50,30,0.8),
-      0 0 20px rgba(255,0,0,0.5),
-      inset 0 0 12px rgba(255,100,80,0.3);
-    animation: dangerPulse 0.15s ease-in-out;
+    background: radial-gradient(circle at 35% 35%, #ff9988, #ff2211 60%, #880000);
+    border-color: rgba(255,60,40,0.9);
+    box-shadow: 0 0 8px rgba(255,40,20,0.9), 0 0 22px rgba(255,0,0,0.5);
+    animation: dangerPulse 0.14s ease-in-out;
   }
-
   @keyframes dangerPulse {
     0%,100%{transform:scale(1);}
-    50%{transform:scale(1.08);}
+    50%{transform:scale(1.1);}
   }
 
-  /* ── DIVIDER ── */
   .divider {
-    width: 6px;
+    width: 4px;
     align-self: stretch;
-    background: linear-gradient(180deg, var(--metal-light), var(--metal), var(--metal-light));
-    border-radius: 3px;
-    box-shadow: 0 0 8px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+    background: linear-gradient(180deg, transparent 0%, rgba(0,240,255,0.6) 20%, rgba(0,240,255,0.85) 50%, rgba(0,240,255,0.6) 80%, transparent 100%);
+    border-radius: 2px;
+    box-shadow: 0 0 10px rgba(0,240,255,0.5), 0 0 25px rgba(0,200,255,0.2);
+    margin: 36px 6px;
     position: relative;
-    margin: 40px 4px;
   }
   .divider::after {
     content: '';
     position: absolute;
     top: 50%; left: 50%;
     transform: translate(-50%,-50%);
-    width: 10px; height: 10px;
-    background: var(--metal-light);
+    width: 8px; height: 8px;
+    background: var(--tron-cyan);
     border-radius: 50%;
-    box-shadow: 0 0 4px rgba(255,255,255,0.15);
+    box-shadow: 0 0 6px var(--tron-cyan), 0 0 14px var(--tron-cyan);
   }
 
-  /* ── DOT MATRIX DISPLAY ── */
   .matrix-wrap {
-    background: #0d0d0d;
-    border: 2px solid #222;
-    border-radius: 6px;
-    padding: 8px;
-    box-shadow: inset 0 0 12px rgba(0,0,0,0.8), 0 2px 8px rgba(0,0,0,0.5);
-    position: relative;
+    background: #020808;
+    border: 1px solid rgba(0,240,255,0.18);
+    border-radius: 3px;
+    padding: 6px;
+    box-shadow: inset 0 0 14px rgba(0,0,0,0.9), 0 0 10px rgba(0,200,255,0.1);
   }
-  .matrix-wrap::before {
-    content: '';
-    position: absolute;
-    inset: -1px;
-    border-radius: 7px;
-    background: linear-gradient(135deg, rgba(255,255,255,0.05), transparent);
-    pointer-events: none;
-  }
-  canvas.matrix {
-    display: block;
-    image-rendering: pixelated;
-  }
+  canvas.matrix { display: block; image-rendering: pixelated; }
 
-  /* ── STATUS AREA ── */
   .status-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
     width: 100%;
     max-width: 280px;
-    min-height: 22px;
+    min-height: 20px;
   }
   .score-display {
+    font-family: 'Share Tech Mono', monospace;
     font-size: 13px;
-    color: var(--amber);
-    letter-spacing: 1px;
+    color: var(--tron-cyan);
+    letter-spacing: 2px;
+    text-shadow: 0 0 6px var(--tron-cyan);
   }
   .alive-indicator {
-    width: 10px; height: 10px;
+    width: 8px; height: 8px;
     border-radius: 50%;
-    background: var(--green-neon);
-    box-shadow: 0 0 8px var(--green-neon);
+    background: var(--tron-cyan);
+    box-shadow: 0 0 6px var(--tron-cyan), 0 0 14px var(--tron-cyan);
     transition: background 0.2s, box-shadow 0.2s;
   }
   .alive-indicator.dead {
     background: var(--red-death);
-    box-shadow: 0 0 8px var(--red-death);
+    box-shadow: 0 0 6px var(--red-death);
   }
 
-  /* ── CONTROLS ── */
-  .controls-row {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-  }
+  .controls-row { display:flex; gap:10px; justify-content:center; }
 
   .arcade-btn {
-    width: 64px; height: 64px;
-    border-radius: 10px;
-    border: none;
+    width: 62px; height: 62px;
+    border-radius: 8px;
+    border: 1px solid rgba(57,255,20,0.55);
     cursor: pointer;
-    font-size: 22px;
-    font-family: 'Bangers', cursive;
-    letter-spacing: 1px;
-    position: relative;
-    transition: transform 0.08s, box-shadow 0.08s;
+    font-size: 20px;
+    transition: transform 0.07s, box-shadow 0.07s;
     user-select: none;
     -webkit-user-select: none;
-    background: linear-gradient(180deg, #44ee22 0%, #22aa00 60%, #115500 100%);
-    color: #fff;
-    box-shadow:
-      0 6px 0 #0a3300,
-      0 0 20px rgba(57,255,20,0.4),
-      0 0 40px rgba(57,255,20,0.2),
-      inset 0 1px 0 rgba(255,255,255,0.3);
-    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    background: linear-gradient(180deg, #1a5500 0%, #0d3300 60%, #061a00 100%);
+    color: #aaff88;
+    box-shadow: 0 5px 0 #030e00, 0 0 16px rgba(57,255,20,0.32), inset 0 1px 0 rgba(150,255,80,0.22);
+    text-shadow: 0 0 8px rgba(57,255,20,0.8);
   }
   .arcade-btn:active, .arcade-btn.pressed {
     transform: translateY(4px);
-    box-shadow:
-      0 2px 0 #0a3300,
-      0 0 12px rgba(57,255,20,0.3),
-      inset 0 1px 0 rgba(255,255,255,0.2);
+    box-shadow: 0 1px 0 #030e00, 0 0 10px rgba(57,255,20,0.2);
   }
 
-  /* ── CENTRE PANEL ── */
   .centre-panel {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 16px;
-    padding: 0 8px;
-    min-width: 100px;
+    gap: 14px;
+    padding: 0 6px;
+    min-width: 96px;
   }
 
   .spray-can {
-    font-size: 36px;
-    filter: drop-shadow(0 0 8px rgba(0,200,255,0.5));
-    animation: sway 3s ease-in-out infinite;
+    font-size: 30px;
+    filter: drop-shadow(0 0 8px rgba(0,240,255,0.6));
+    animation: sway 3.5s ease-in-out infinite;
   }
   @keyframes sway {
-    0%,100%{transform:rotate(-8deg);}
-    50%{transform:rotate(8deg);}
+    0%,100%{transform:rotate(-9deg);}
+    50%{transform:rotate(9deg);}
   }
 
   .start-btn {
-    background: linear-gradient(180deg, #ffdd44 0%, #ff9900 60%, #cc5500 100%);
-    color: #1a0a00;
-    font-family: 'Bangers', cursive;
-    font-size: 16px;
+    background: transparent;
+    color: var(--tron-cyan);
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
     letter-spacing: 2px;
-    border: none;
-    border-radius: 8px;
-    padding: 10px 18px;
+    border: 1px solid rgba(0,240,255,0.45);
+    border-radius: 2px;
+    padding: 10px 14px;
     cursor: pointer;
-    box-shadow:
-      0 4px 0 #7a3300,
-      0 0 16px rgba(255,150,0,0.4);
-    transition: transform 0.08s, box-shadow 0.08s;
+    text-transform: uppercase;
+    box-shadow: 0 0 10px rgba(0,240,255,0.18), inset 0 0 10px rgba(0,240,255,0.04);
+    text-shadow: 0 0 8px var(--tron-cyan);
+    transition: box-shadow 0.15s, background 0.15s;
     white-space: nowrap;
   }
-  .start-btn:active {
-    transform: translateY(3px);
-    box-shadow: 0 1px 0 #7a3300;
+  .start-btn:hover {
+    background: rgba(0,240,255,0.06);
+    box-shadow: 0 0 20px rgba(0,240,255,0.32), inset 0 0 14px rgba(0,240,255,0.07);
   }
+  .start-btn:active { transform:scale(0.97); }
 
   .session-status {
-    font-family: 'Bangers', cursive;
-    font-size: 15px;
-    letter-spacing: 1px;
-    color: var(--blue-neon);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: rgba(0,240,255,0.55);
     text-align: center;
-    text-shadow: 0 0 8px var(--blue-neon);
-    min-height: 40px;
-    line-height: 1.4;
+    min-height: 36px;
+    line-height: 1.6;
+    text-transform: uppercase;
   }
 
-  /* ── GAME OVER OVERLAY ── */
   .gameover-overlay {
     position: absolute;
     inset: 0;
-    background: rgba(0,0,0,0.82);
-    border-radius: 16px;
+    background: rgba(0,4,12,0.9);
+    border-radius: 3px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 12px;
+    gap: 14px;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.4s;
+    transition: opacity 0.35s;
     z-index: 10;
   }
-  .gameover-overlay.visible {
-    opacity: 1;
-    pointer-events: all;
-  }
+  .gameover-overlay.visible { opacity:1; pointer-events:all; }
+
   .gameover-title {
-    font-family: 'Bangers', cursive;
-    font-size: clamp(36px, 6vw, 64px);
-    letter-spacing: 4px;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    font-size: clamp(28px, 5vw, 52px);
+    letter-spacing: 6px;
     color: var(--red-death);
-    text-shadow: 0 0 20px var(--red-death), 0 0 40px rgba(255,50,30,0.5);
-    animation: glitch 0.3s ease-in-out;
+    text-shadow: 0 0 14px var(--red-death), 0 0 35px rgba(255,40,20,0.4);
+    text-transform: uppercase;
+    animation: glitch 0.28s ease-in-out;
   }
   @keyframes glitch {
     0%{transform:skewX(0);}
-    20%{transform:skewX(-6deg) translateX(-4px);}
-    40%{transform:skewX(4deg) translateX(3px);}
+    20%{transform:skewX(-5deg) translateX(-3px);}
+    40%{transform:skewX(3deg) translateX(2px);}
     60%{transform:skewX(-2deg);}
     100%{transform:skewX(0);}
   }
-  .gameover-scores {
-    display: flex; gap: 24px;
-  }
+
+  .gameover-scores { display:flex; gap:20px; }
   .score-card {
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 8px;
-    padding: 10px 20px;
+    background: rgba(0,240,255,0.04);
+    border: 1px solid rgba(0,240,255,0.16);
+    border-radius: 2px;
+    padding: 10px 18px;
     text-align: center;
   }
-  .score-card .sc-label { font-size: 11px; color: rgba(255,255,255,0.5); letter-spacing:2px; }
-  .score-card .sc-val { font-family:'Bangers',cursive; font-size:32px; color:var(--amber); }
-  .score-card .sc-name { font-size:12px; color:rgba(255,255,255,0.7); letter-spacing:1px; }
+  .score-card .sc-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: rgba(0,240,255,0.38);
+    letter-spacing: 2px;
+    min-height: 14px;
+  }
+  .score-card .sc-val {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    font-size: 28px;
+    color: var(--tron-cyan);
+    text-shadow: 0 0 10px var(--tron-cyan);
+  }
+  .score-card .sc-name {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .winner-label {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    font-size: 16px;
+    letter-spacing: 3px;
+    color: var(--tron-cyan);
+    text-shadow: 0 0 12px var(--tron-cyan);
+    text-align: center;
+  }
 
-  /* ── KEYBOARD HINT ── */
   .key-hint {
     text-align: center;
-    font-size: 11px;
-    color: rgba(255,255,255,0.25);
-    letter-spacing: 1px;
-    padding-top: 8px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: rgba(0,240,255,0.2);
+    letter-spacing: 2px;
+    padding-top: 10px;
+    text-transform: uppercase;
   }
 
-  /* ── SCAN LINE EFFECT ── */
   .cabinet::after {
     content: '';
     position: absolute;
     inset: 0;
-    background: repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 2px,
-      rgba(0,0,0,0.04) 2px,
-      rgba(0,0,0,0.04) 4px
-    );
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.055) 2px, rgba(0,0,0,0.055) 4px);
     pointer-events: none;
-    border-radius: 18px;
+    border-radius: 3px;
   }
 
-  @media (max-width: 600px) {
-    .cube-grid { gap: 5px; }
-    .arcade-btn { width: 52px; height: 52px; font-size: 18px; }
-    .centre-panel { min-width: 70px; }
+  @media (max-width:600px) {
+    .cube-grid{gap:4px;}
+    .arcade-btn{width:50px;height:50px;font-size:17px;}
+    .centre-panel{min-width:66px;}
+    .marquee h1{letter-spacing:5px;}
   }
 </style>
 </head>
@@ -411,21 +395,21 @@
 
 <div class="marquee">
   <h1>SUBWAY SURFERS</h1>
+  <div class="marquee-sub">arcade · two player · 2025</div>
   <div class="marquee-glow"></div>
 </div>
 
 <div class="cabinet">
   <div class="game-area">
 
-    <!-- PLAYER 1 -->
     <div class="player-section" id="p1section">
-      <div class="player-label">P1</div>
+      <div class="player-label">Player 01</div>
       <div class="cube-grid" id="grid1"></div>
       <div class="matrix-wrap">
         <canvas class="matrix" id="matrix1" width="72" height="72"></canvas>
       </div>
       <div class="status-row">
-        <div class="score-display" id="score1">0s</div>
+        <div class="score-display" id="score1">00s</div>
         <div class="alive-indicator" id="indicator1"></div>
       </div>
       <div class="controls-row">
@@ -434,25 +418,22 @@
       </div>
     </div>
 
-    <!-- DIVIDER -->
     <div class="divider"></div>
 
-    <!-- CENTRE -->
     <div class="centre-panel">
       <div class="spray-can">🎨</div>
       <button class="start-btn" onclick="startSession()">START<br>GAME</button>
-      <div class="session-status" id="sessionStatus">PRESS START</div>
+      <div class="session-status" id="sessionStatus">INSERT COIN</div>
     </div>
 
-    <!-- PLAYER 2 -->
     <div class="player-section" id="p2section">
-      <div class="player-label">P2</div>
+      <div class="player-label">Player 02</div>
       <div class="cube-grid" id="grid2"></div>
       <div class="matrix-wrap">
         <canvas class="matrix" id="matrix2" width="72" height="72"></canvas>
       </div>
       <div class="status-row">
-        <div class="score-display" id="score2">0s</div>
+        <div class="score-display" id="score2">00s</div>
         <div class="alive-indicator" id="indicator2"></div>
       </div>
       <div class="controls-row">
@@ -463,345 +444,219 @@
 
   </div>
 
-  <!-- GAME OVER OVERLAY -->
   <div class="gameover-overlay" id="gameoverOverlay">
     <div class="gameover-title">GAME OVER</div>
     <div class="gameover-scores" id="gameoverScores"></div>
-    <button class="start-btn" onclick="startSession()" style="margin-top:8px;font-size:18px;padding:12px 28px;">PLAY AGAIN</button>
+    <div class="winner-label" id="winnerLabel"></div>
+    <button class="start-btn" onclick="startSession()" style="margin-top:6px;font-size:13px;padding:12px 26px;letter-spacing:3px;">PLAY AGAIN</button>
   </div>
 
-  <div class="key-hint">P1: A/D keys &nbsp;|&nbsp; P2: ← / → arrow keys &nbsp;|&nbsp; SPACE: start</div>
+  <div class="key-hint">P1: A / D &nbsp;·&nbsp; P2: ← / → &nbsp;·&nbsp; SPACE: start</div>
 </div>
 
 <script>
-// ── CONSTANTS ──
-const ROWS = 5, COLS = 3;
-const MATRIX_PX = 9; // px per dot on 8x8 matrix (72/8)
-const BG_DOT = '#0d1a0d', ON_DOT = '#ffffff';
+const ROWS=5, COLS=3, MATRIX_PX=9;
+const ON_DOT='#00f0ff';
 
-// ── STATE ──
-let gameRunning = false;
-let sessionOver = false;
-let startTime = 0;
-let tickInterval = null;
-let fallSpeedMs = 700; // ms per row drop, decreases over time
-let spawnCooldown = [0, 0]; // per player
-let lastFallTime = 0;
-let elapsed = 0;
+let gameRunning=false, startTime=0, tickInterval=null;
+let fallSpeedMs=700, spawnCooldown=[0,0], elapsed=0;
 
-const players = [
-  { lane: 1, alive: true, score: 0, cubes: [], gridEl: null, matrixCtx: null, scoreEl: null, indEl: null },
-  { lane: 1, alive: true, score: 0, cubes: [], gridEl: null, matrixCtx: null, scoreEl: null, indEl: null }
+const players=[
+  {lane:1,alive:true,score:0,cubes:[],gridEl:null,matrixCtx:null,scoreEl:null,indEl:null},
+  {lane:1,alive:true,score:0,cubes:[],gridEl:null,matrixCtx:null,scoreEl:null,indEl:null}
 ];
 
-// ── INIT DOM REFS ──
-function initRefs() {
-  players[0].gridEl    = document.getElementById('grid1');
-  players[0].matrixCtx = document.getElementById('matrix1').getContext('2d');
-  players[0].scoreEl   = document.getElementById('score1');
-  players[0].indEl     = document.getElementById('indicator1');
-  players[1].gridEl    = document.getElementById('grid2');
-  players[1].matrixCtx = document.getElementById('matrix2').getContext('2d');
-  players[1].scoreEl   = document.getElementById('score2');
-  players[1].indEl     = document.getElementById('indicator2');
+function initRefs(){
+  players[0].gridEl=document.getElementById('grid1');
+  players[0].matrixCtx=document.getElementById('matrix1').getContext('2d');
+  players[0].scoreEl=document.getElementById('score1');
+  players[0].indEl=document.getElementById('indicator1');
+  players[1].gridEl=document.getElementById('grid2');
+  players[1].matrixCtx=document.getElementById('matrix2').getContext('2d');
+  players[1].scoreEl=document.getElementById('score2');
+  players[1].indEl=document.getElementById('indicator2');
   buildGrids();
 }
 
-// ── BUILD CUBE GRIDS ──
-function buildGrids() {
-  [0,1].forEach(pi => {
-    const p = players[pi];
-    p.gridEl.innerHTML = '';
-    for(let r = 0; r < ROWS; r++) {
-      for(let c = 0; c < COLS; c++) {
-        const div = document.createElement('div');
-        div.className = 'cube';
-        div.id = `cube_${pi}_${r}_${c}`;
-        p.gridEl.appendChild(div);
-      }
+function buildGrids(){
+  [0,1].forEach(pi=>{
+    const p=players[pi]; p.gridEl.innerHTML='';
+    for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++){
+      const d=document.createElement('div');
+      d.className='cube'; d.id=`cube_${pi}_${r}_${c}`;
+      p.gridEl.appendChild(d);
     }
   });
 }
 
-// ── CUBE HELPERS ──
-function setCube(pi, row, col, state) {
-  // state: 'off' | 'lit' | 'danger'
-  const el = document.getElementById(`cube_${pi}_${row}_${col}`);
-  if (!el) return;
-  el.className = 'cube' + (state !== 'off' ? ' ' + state : '');
+function setCube(pi,row,col,state){
+  const el=document.getElementById(`cube_${pi}_${row}_${col}`);
+  if(!el) return;
+  el.className='cube'+(state!=='off'?' '+state:'');
 }
 
-function clearAllCubes(pi) {
-  for(let r = 0; r < ROWS; r++)
-    for(let c = 0; c < COLS; c++)
-      setCube(pi, r, c, 'off');
+function clearAllCubes(pi){
+  for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++) setCube(pi,r,c,'off');
 }
 
-// ── MATRIX SPRITE ──
-// 8x8 grid: 3 lane-indicator positions, lane occupies cols 2-3, 4-5, or 5-6
-// Simple pedestrian icon centred in the lane
+const LANE_C=[1,3,5];
 
-const LANE_C = [1, 3, 5]; // leftmost col per lane
-
-function drawMatrix(ctx, lane, alive) {
-  ctx.fillStyle = '#080808';
-  ctx.fillRect(0, 0, 72, 72);
-
-  if (!alive) {
-    // draw X
-    ctx.strokeStyle = '#ff3322';
-    ctx.lineWidth = 2;
-    ctx.lineCap = 'round';
-    ctx.beginPath(); ctx.moveTo(18,18); ctx.lineTo(54,54); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(54,18); ctx.lineTo(18,54); ctx.stroke();
-    return;
+function drawMatrix(ctx,lane,alive){
+  ctx.fillStyle='#020808';
+  ctx.fillRect(0,0,72,72);
+  if(!alive){
+    ctx.strokeStyle='#ff2211'; ctx.lineWidth=2.5; ctx.lineCap='round';
+    ctx.shadowColor='#ff2211'; ctx.shadowBlur=8;
+    ctx.beginPath(); ctx.moveTo(16,16); ctx.lineTo(56,56); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(56,16); ctx.lineTo(16,56); ctx.stroke();
+    ctx.shadowBlur=0; return;
   }
-
-  const lc = LANE_C[lane];
-  const px = MATRIX_PX;
-
-  function dot(r, c) {
-    if (r < 0 || r > 7 || c < 0 || c > 7) return;
-    ctx.fillStyle = ON_DOT;
-    ctx.fillRect(c * px + 1, r * px + 1, px - 2, px - 2);
-  }
-
-  // head
-  dot(0, lc); dot(0, lc+1);
-  // body
-  dot(1, lc); dot(1, lc+1);
-  dot(2, lc); dot(2, lc+1);
-  dot(3, lc); dot(3, lc+1);
-  // arms
-  if (lc > 0) dot(2, lc-1);
-  if (lc+2 < 8) dot(2, lc+2);
-  // legs
-  dot(4, lc); dot(4, lc+1);
-  dot(5, lc); dot(5, lc+1);
+  const lc=LANE_C[lane], px=MATRIX_PX;
+  ctx.shadowColor=ON_DOT; ctx.shadowBlur=4; ctx.fillStyle=ON_DOT;
+  function dot(r,c){if(r<0||r>7||c<0||c>7)return; ctx.fillRect(c*px+1,r*px+1,px-2,px-2);}
+  dot(0,lc);dot(0,lc+1);
+  dot(1,lc);dot(1,lc+1);
+  dot(2,lc);dot(2,lc+1);
+  dot(3,lc);dot(3,lc+1);
+  if(lc>0) dot(2,lc-1);
+  if(lc+2<8) dot(2,lc+2);
+  dot(4,lc);dot(4,lc+1);
+  dot(5,lc);dot(5,lc+1);
+  ctx.shadowBlur=0;
 }
 
-// ── FALLING CUBE OBJECTS ──
-// Each cube: { col, row (float), speed (rows/tick) }
-// row is index 0..4, at row 5 it has "landed"
-
-function spawnCube(pi) {
-  const p = players[pi];
-  // pick a column — guarantee at least one safe lane
-  // find occupied bottom lanes
-  const dangerCols = new Set(
-    p.cubes.filter(c => c.row >= 3).map(c => c.col)
-  );
-  // pick from all cols, but bias toward non-player lane for fairness
-  const all = [0, 1, 2];
-  // always guarantee player lane is safe if two others are already dangerous
-  const safe = all.filter(c => !dangerCols.has(c));
-  if (safe.length === 0) return; // all lanes occupied, skip spawn
-
-  // pick a random column (can be any, game handles it)
-  const col = all[Math.floor(Math.random() * all.length)];
-
-  // don't stack cubes in same column
-  if (p.cubes.some(c => c.col === col && c.row < 1)) return;
-
-  p.cubes.push({ col, row: 0 });
+function spawnCube(pi){
+  const p=players[pi];
+  const dangerCols=new Set(p.cubes.filter(c=>c.row>=3).map(c=>c.col));
+  const safe=[0,1,2].filter(c=>!dangerCols.has(c));
+  if(safe.length===0) return;
+  const col=[0,1,2][Math.floor(Math.random()*3)];
+  if(p.cubes.some(c=>c.col===col&&c.row<1)) return;
+  p.cubes.push({col,row:0});
 }
 
-function guaranteeSafePath(pi) {
-  const p = players[pi];
-  // check if all 3 lanes have a cube at row >= 3 (near death)
-  const nearBottom = p.cubes.filter(c => c.row >= 3);
-  const cols = new Set(nearBottom.map(c => c.col));
-  if (cols.size >= 3) {
-    // remove cube from a lane that isn't player's current lane
-    const toSave = [0,1,2].find(c => c !== p.lane && cols.has(c));
-    if (toSave !== undefined) {
-      p.cubes = p.cubes.filter(c => !(c.col === toSave && c.row >= 3));
-    }
+function guaranteeSafePath(pi){
+  const p=players[pi];
+  const nearBottom=p.cubes.filter(c=>c.row>=3);
+  const cols=new Set(nearBottom.map(c=>c.col));
+  if(cols.size>=3){
+    const toSave=[0,1,2].find(c=>c!==p.lane&&cols.has(c));
+    if(toSave!==undefined) p.cubes=p.cubes.filter(c=>!(c.col===toSave&&c.row>=3));
   }
 }
 
-// ── GAME TICK ──
-function tick() {
-  if (!gameRunning) return;
+function tick(){
+  if(!gameRunning) return;
+  elapsed=(Date.now()-startTime)/1000;
+  fallSpeedMs=Math.max(160, 700*Math.max(0.25,1/(1+elapsed/30)));
 
-  elapsed = (Date.now() - startTime) / 1000;
-
-  // speed ramp: starts at 700ms per row, gets faster
-  // halves roughly every 30 seconds
-  const speedFactor = Math.max(0.25, 1 / (1 + elapsed / 30));
-  const rowsPerTick = 1; // move 1 row per tick
-  const newFallMs = Math.max(160, 700 * speedFactor);
-  fallSpeedMs = newFallMs;
-
-  [0, 1].forEach(pi => {
-    const p = players[pi];
-    if (!p.alive) return;
-
-    p.score = Math.floor(elapsed);
-
-    // move cubes down
-    p.cubes.forEach(c => c.row += 1);
-
-    // check collision: cube at row 4 (bottom, index 4 = row 5 of grid) in player's lane
-    const hit = p.cubes.some(c => c.row >= ROWS && c.col === p.lane);
-    if (hit) {
-      killPlayer(pi);
-      return;
-    }
-
-    // remove cubes that passed bottom
-    p.cubes = p.cubes.filter(c => c.row < ROWS);
-
-    // guarantee safe path
+  [0,1].forEach(pi=>{
+    const p=players[pi];
+    if(!p.alive) return;
+    p.score=Math.floor(elapsed);
+    p.cubes.forEach(c=>c.row+=1);
+    if(p.cubes.some(c=>c.row>=ROWS&&c.col===p.lane)){killPlayer(pi);return;}
+    p.cubes=p.cubes.filter(c=>c.row<ROWS);
     guaranteeSafePath(pi);
-
-    // spawn new cube
     spawnCooldown[pi]--;
-    if (spawnCooldown[pi] <= 0) {
+    if(spawnCooldown[pi]<=0){
       spawnCube(pi);
-      // spawn interval: starts at 3 ticks, decreases over time
-      spawnCooldown[pi] = Math.max(1, Math.round(3 - elapsed / 40));
+      spawnCooldown[pi]=Math.max(1,Math.round(3-elapsed/40));
     }
-
-    // render
     renderPlayer(pi);
-    p.scoreEl.textContent = p.score + 's';
+    p.scoreEl.textContent=String(p.score).padStart(2,'0')+'s';
   });
 
-  // check if both dead
-  if (!players[0].alive && !players[1].alive) {
-    endSession();
-    return;
-  }
-
-  // update status
+  if(!players[0].alive&&!players[1].alive){endSession();return;}
   updateSessionStatus();
-
-  // reschedule with current speed
   clearTimeout(tickInterval);
-  tickInterval = setTimeout(tick, fallSpeedMs);
+  tickInterval=setTimeout(tick,fallSpeedMs);
 }
 
-function renderPlayer(pi) {
-  const p = players[pi];
-  clearAllCubes(pi);
-
-  p.cubes.forEach(c => {
-    const row = Math.min(Math.floor(c.row), ROWS - 1);
-    if (row >= 0) setCube(pi, row, c.col, 'lit');
+function renderPlayer(pi){
+  const p=players[pi]; clearAllCubes(pi);
+  p.cubes.forEach(c=>{
+    const row=Math.min(Math.floor(c.row),ROWS-1);
+    if(row>=0) setCube(pi,row,c.col,'lit');
   });
-
-  drawMatrix(p.matrixCtx, p.lane, p.alive);
+  drawMatrix(p.matrixCtx,p.lane,p.alive);
 }
 
-function killPlayer(pi) {
-  const p = players[pi];
-  p.alive = false;
-  // flash danger on their lane bottom
-  setCube(pi, ROWS-1, p.lane, 'danger');
+function killPlayer(pi){
+  const p=players[pi]; p.alive=false;
+  setCube(pi,ROWS-1,p.lane,'danger');
   p.indEl.classList.add('dead');
-  drawMatrix(p.matrixCtx, p.lane, false);
+  drawMatrix(p.matrixCtx,p.lane,false);
   updateSessionStatus();
 }
 
-function updateSessionStatus() {
-  const s = document.getElementById('sessionStatus');
-  const a0 = players[0].alive, a1 = players[1].alive;
-  if (a0 && a1) {
-    s.textContent = '🏃 RUNNING...';
-  } else if (!a0 && a1) {
-    s.innerHTML = '💀 P1 OUT<br>P2 SURVIVES!';
-  } else if (a0 && !a1) {
-    s.innerHTML = '💀 P2 OUT<br>P1 SURVIVES!';
-  }
+function updateSessionStatus(){
+  const s=document.getElementById('sessionStatus');
+  const a0=players[0].alive, a1=players[1].alive;
+  if(a0&&a1)       s.textContent='// RUNNING';
+  else if(!a0&&a1) s.innerHTML='P1 FLATLINED<br>P2 ONLINE';
+  else if(a0&&!a1) s.innerHTML='P2 FLATLINED<br>P1 ONLINE';
 }
 
-function endSession() {
-  gameRunning = false;
-  clearTimeout(tickInterval);
-
-  const s0 = players[0].score, s1 = players[1].score;
-  const winner = s0 > s1 ? 'P1 WINS!' : s1 > s0 ? 'P2 WINS!' : 'DRAW!';
-
-  document.getElementById('gameoverScores').innerHTML = `
+function endSession(){
+  gameRunning=false; clearTimeout(tickInterval);
+  const s0=players[0].score, s1=players[1].score;
+  const winner=s0>s1?'P1 WINS':s1>s0?'P2 WINS':'DRAW';
+  document.getElementById('gameoverScores').innerHTML=`
     <div class="score-card">
-      <div class="sc-name">PLAYER 1</div>
-      <div class="sc-val">${s0}s</div>
-      <div class="sc-label">${s0 >= s1 ? '🏆 WINNER' : ''}</div>
+      <div class="sc-name">Player 01</div>
+      <div class="sc-val">${String(s0).padStart(2,'0')}s</div>
+      <div class="sc-label">${s0>=s1?'// WINNER':''}</div>
     </div>
-    <div class="score-card" style="align-self:center;font-family:'Bangers',cursive;font-size:20px;color:var(--green-neon);text-shadow:0 0 10px var(--green-neon);">${winner}</div>
     <div class="score-card">
-      <div class="sc-name">PLAYER 2</div>
-      <div class="sc-val">${s1}s</div>
-      <div class="sc-label">${s1 > s0 ? '🏆 WINNER' : ''}</div>
-    </div>
-  `;
-
+      <div class="sc-name">Player 02</div>
+      <div class="sc-val">${String(s1).padStart(2,'0')}s</div>
+      <div class="sc-label">${s1>s0?'// WINNER':''}</div>
+    </div>`;
+  document.getElementById('winnerLabel').textContent='// '+winner;
   document.getElementById('gameoverOverlay').classList.add('visible');
 }
 
-// ── START SESSION ──
-function startSession() {
+function startSession(){
   document.getElementById('gameoverOverlay').classList.remove('visible');
   clearTimeout(tickInterval);
-
-  [0,1].forEach(pi => {
-    const p = players[pi];
-    p.lane = 1;
-    p.alive = true;
-    p.score = 0;
-    p.cubes = [];
+  [0,1].forEach(pi=>{
+    const p=players[pi];
+    p.lane=1;p.alive=true;p.score=0;p.cubes=[];
     p.indEl.classList.remove('dead');
-    p.scoreEl.textContent = '0s';
+    p.scoreEl.textContent='00s';
     clearAllCubes(pi);
-    drawMatrix(p.matrixCtx, 1, true);
+    drawMatrix(p.matrixCtx,1,true);
   });
-
-  spawnCooldown = [2, 2];
-  fallSpeedMs = 700;
-  elapsed = 0;
-  startTime = Date.now();
-  gameRunning = true;
-  sessionOver = false;
-
-  document.getElementById('sessionStatus').textContent = '🏃 RUNNING...';
-
-  tickInterval = setTimeout(tick, fallSpeedMs);
+  spawnCooldown=[2,2];fallSpeedMs=700;elapsed=0;
+  startTime=Date.now();gameRunning=true;
+  document.getElementById('sessionStatus').textContent='// RUNNING';
+  tickInterval=setTimeout(tick,fallSpeedMs);
 }
 
-// ── CONTROLS ──
-function p1Left()  { if(players[0].alive && gameRunning) { players[0].lane = Math.max(0, players[0].lane-1); drawMatrix(players[0].matrixCtx, players[0].lane, true); } }
-function p1Right() { if(players[0].alive && gameRunning) { players[0].lane = Math.min(2, players[0].lane+1); drawMatrix(players[0].matrixCtx, players[0].lane, true); } }
-function p2Left()  { if(players[1].alive && gameRunning) { players[1].lane = Math.max(0, players[1].lane-1); drawMatrix(players[1].matrixCtx, players[1].lane, true); } }
-function p2Right() { if(players[1].alive && gameRunning) { players[1].lane = Math.min(2, players[1].lane+1); drawMatrix(players[1].matrixCtx, players[1].lane, true); } }
+function p1Left() {if(players[0].alive&&gameRunning){players[0].lane=Math.max(0,players[0].lane-1);drawMatrix(players[0].matrixCtx,players[0].lane,true);}}
+function p1Right(){if(players[0].alive&&gameRunning){players[0].lane=Math.min(2,players[0].lane+1);drawMatrix(players[0].matrixCtx,players[0].lane,true);}}
+function p2Left() {if(players[1].alive&&gameRunning){players[1].lane=Math.max(0,players[1].lane-1);drawMatrix(players[1].matrixCtx,players[1].lane,true);}}
+function p2Right(){if(players[1].alive&&gameRunning){players[1].lane=Math.min(2,players[1].lane+1);drawMatrix(players[1].matrixCtx,players[1].lane,true);}}
 
-// Button press animation
-function flashBtn(id) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  el.classList.add('pressed');
-  setTimeout(() => el.classList.remove('pressed'), 120);
+function flashBtn(id){
+  const el=document.getElementById(id);if(!el)return;
+  el.classList.add('pressed');setTimeout(()=>el.classList.remove('pressed'),120);
 }
 
-document.addEventListener('keydown', e => {
-  switch(e.key) {
-    case 'a': case 'A': p1Left();  flashBtn('p1left');  break;
-    case 'd': case 'D': p1Right(); flashBtn('p1right'); break;
-    case 'w': case 'W': break;
-    case 's': case 'S': break;
+document.addEventListener('keydown',e=>{
+  switch(e.key){
+    case 'a':case 'A': p1Left();  flashBtn('p1left');  break;
+    case 'd':case 'D': p1Right(); flashBtn('p1right'); break;
     case 'ArrowLeft':  e.preventDefault(); p2Left();  flashBtn('p2left');  break;
     case 'ArrowRight': e.preventDefault(); p2Right(); flashBtn('p2right'); break;
-    case 'ArrowUp':    e.preventDefault(); break;
-    case 'ArrowDown':  e.preventDefault(); break;
     case ' ': e.preventDefault(); startSession(); break;
   }
 });
 
-// ── BOOT ──
 initRefs();
-// draw idle matrices
-drawMatrix(players[0].matrixCtx, 1, true);
-drawMatrix(players[1].matrixCtx, 1, true);
+drawMatrix(players[0].matrixCtx,1,true);
+drawMatrix(players[1].matrixCtx,1,true);
 </script>
 </body>
 </html>
