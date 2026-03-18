@@ -1,0 +1,162 @@
+
+<style>
+.wrap{display:flex;flex-direction:column;align-items:center;gap:20px;padding:2rem 0;}
+.row{display:flex;align-items:center;gap:28px;flex-wrap:wrap;justify-content:center;}
+.lbl{font-size:12px;color:var(--color-text-secondary);text-align:center;margin-top:6px;}
+canvas{image-rendering:pixelated;border:0.5px solid var(--color-border-secondary);border-radius:4px;}
+.controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center;}
+.btn{font-size:13px;padding:6px 14px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-secondary);color:var(--color-text-primary);cursor:pointer;}
+.btn.active{border-color:var(--color-border-primary);background:var(--color-background-primary);font-weight:500;}
+.strip-group{display:flex;flex-direction:column;align-items:center;gap:4px;}
+.hex-row{font-family:var(--font-mono);font-size:11px;color:var(--color-text-secondary);display:flex;gap:6px;flex-wrap:wrap;justify-content:center;max-width:320px;}
+</style>
+
+<div class="wrap">
+  <div class="row">
+    <div style="display:flex;flex-direction:column;align-items:center;">
+      <canvas id="big" width="256" height="256"></canvas>
+      <div class="lbl">64× zoom</div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;">
+      <canvas id="small" width="64" height="64"></canvas>
+      <div class="lbl">actual 8×8</div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+      <div class="lbl" style="margin:0;">frame bytes (MAX7219)</div>
+      <div class="hex-row" id="hexDisplay"></div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="btn active" id="btnRun"   onclick="setMode('run')">Run</button>
+    <button class="btn"        id="btnLeft"  onclick="setMode('left')">Strafe left</button>
+    <button class="btn"        id="btnRight" onclick="setMode('right')">Strafe right</button>
+  </div>
+
+  <div style="display:flex;align-items:center;gap:10px;">
+    <span style="font-size:13px;color:var(--color-text-secondary);">Speed</span>
+    <input type="range" min="1" max="10" value="5" id="spd" style="width:100px;" step="1"/>
+  </div>
+
+  <div style="display:flex;gap:20px;flex-wrap:wrap;justify-content:center;">
+    <div class="strip-group">
+      <canvas id="stripRun"   width="128" height="32"></canvas>
+      <div class="lbl">run</div>
+    </div>
+    <div class="strip-group">
+      <canvas id="stripLeft"  width="128" height="32"></canvas>
+      <div class="lbl">strafe left</div>
+    </div>
+    <div class="strip-group">
+      <canvas id="stripRight" width="128" height="32"></canvas>
+      <div class="lbl">strafe right</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const ON='#FFFFFF', BG='#000000';
+
+function make(){ return Array.from({length:8},()=>Array(8).fill(0)); }
+function s(g,r,c){ if(r>=0&&r<8&&c>=0&&c<8) g[r][c]=1; }
+
+function runFrame(ph){
+  const g=make();
+  s(g,1,3);s(g,1,4);
+  s(g,2,3);s(g,2,4);
+  s(g,3,2);s(g,3,3);s(g,3,4);s(g,3,5);
+  s(g,4,3);s(g,4,4);
+  if(ph===0){s(g,3,1);s(g,4,6);}
+  else      {s(g,3,6);s(g,4,1);}
+  if(ph===0){s(g,5,2);s(g,5,5);s(g,6,1);s(g,6,6);}
+  else      {s(g,5,3);s(g,5,4);s(g,6,3);s(g,6,5);}
+  return g;
+}
+
+function leftFrame(ph){
+  const g=make();
+  s(g,1,2);s(g,1,3);
+  s(g,2,2);s(g,2,3);
+  s(g,3,2);s(g,3,3);s(g,3,4);
+  s(g,4,2);s(g,4,3);
+  if(ph===0){s(g,3,1);s(g,4,4);}
+  else      {s(g,3,4);s(g,4,1);}
+  if(ph===0){s(g,5,1);s(g,5,4);s(g,6,0);s(g,6,4);s(g,7,0);}
+  else      {s(g,5,2);s(g,5,3);s(g,6,2);s(g,6,4);s(g,7,3);s(g,7,5);}
+  return g;
+}
+
+function mirrorH(g){ return g.map(row=>[...row].reverse()); }
+function rightFrame(ph){ return mirrorH(leftFrame(ph)); }
+
+const frameSets={
+  run:  [runFrame(0),  runFrame(1),  runFrame(0),  runFrame(1)],
+  left: [leftFrame(0), leftFrame(1), leftFrame(0), leftFrame(1)],
+  right:[rightFrame(0),rightFrame(1),rightFrame(0),rightFrame(1)]
+};
+
+// Convert grid to 8 row-bytes
+function toBytes(g){ return g.map(row=>row.reduce((b,v,i)=>b|(v<<(7-i)),0)); }
+function toHex(b){ return '0x'+b.toString(16).padStart(2,'0').toUpperCase(); }
+
+function drawBg(ctx,w,h){ ctx.fillStyle=BG; ctx.fillRect(0,0,w,h); }
+
+function drawGrid(ctx,grid,ps,ox=0,oy=0){
+  for(let r=0;r<8;r++) for(let c=0;c<8;c++){
+    ctx.fillStyle = grid[r][c] ? ON : BG;
+    ctx.fillRect(ox+c*ps, oy+r*ps, ps, ps);
+  }
+}
+
+function drawGridLines(ctx,ps){
+  ctx.strokeStyle='rgba(255,255,255,0.08)'; ctx.lineWidth=0.5;
+  for(let i=1;i<8;i++){
+    ctx.beginPath();ctx.moveTo(i*ps,0);ctx.lineTo(i*ps,256);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(0,i*ps);ctx.lineTo(256,i*ps);ctx.stroke();
+  }
+}
+
+function drawStrip(id, frames){
+  const ctx=document.getElementById(id).getContext('2d');
+  const n=frames.length; const fw=128/n;
+  drawBg(ctx,128,32);
+  frames.forEach((f,i)=> drawGrid(ctx,f,4,i*fw,0));
+  ctx.strokeStyle='rgba(255,255,255,0.15)'; ctx.lineWidth=0.5;
+  for(let i=1;i<n;i++){ctx.beginPath();ctx.moveTo(i*fw,0);ctx.lineTo(i*fw,32);ctx.stroke();}
+}
+
+drawStrip('stripRun',   frameSets.run);
+drawStrip('stripLeft',  frameSets.left);
+drawStrip('stripRight', frameSets.right);
+
+let mode='run', frame=0, last=0;
+const bigCtx=document.getElementById('big').getContext('2d');
+const smallCtx=document.getElementById('small').getContext('2d');
+const hexEl=document.getElementById('hexDisplay');
+
+function setMode(m){
+  mode=m; frame=0;
+  ['run','left','right'].forEach(n=>{
+    document.getElementById('btn'+n.charAt(0).toUpperCase()+n.slice(1)).classList.toggle('active',n===m);
+  });
+}
+
+function loop(ts){
+  const fps=parseInt(document.getElementById('spd').value)*1.5+2;
+  if(ts-last>1000/fps){
+    last=ts;
+    const frames=frameSets[mode];
+    const f=frames[frame%frames.length];
+
+    drawBg(bigCtx,256,256); drawGrid(bigCtx,f,32); drawGridLines(bigCtx,32);
+    drawBg(smallCtx,64,64); drawGrid(smallCtx,f,8);
+
+    const bytes=toBytes(f);
+    hexEl.innerHTML=bytes.map(b=>`<span>${toHex(b)}</span>`).join('');
+
+    frame=(frame+1)%frames.length;
+  }
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+</script>

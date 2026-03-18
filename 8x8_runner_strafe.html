@@ -1,0 +1,199 @@
+
+<style>
+.wrap { display:flex; flex-direction:column; align-items:center; gap:20px; padding:2rem 0; }
+.row { display:flex; align-items:center; gap:28px; flex-wrap:wrap; justify-content:center; }
+.lbl { font-size:12px; color:var(--color-text-secondary); text-align:center; margin-top:6px; }
+canvas { image-rendering:pixelated; border:0.5px solid var(--color-border-secondary); border-radius:4px; }
+.controls { display:flex; align-items:center; gap:16px; flex-wrap:wrap; justify-content:center; }
+.btn { font-size:13px; padding:6px 14px; border-radius:var(--border-radius-md); border:0.5px solid var(--color-border-secondary); background:var(--color-background-secondary); color:var(--color-text-primary); cursor:pointer; }
+.btn.active { border-color:var(--color-border-primary); background:var(--color-background-primary); font-weight:500; }
+.strip-row { display:flex; gap:12px; align-items:flex-start; flex-wrap:wrap; justify-content:center; }
+.strip-group { display:flex; flex-direction:column; align-items:center; gap:4px; }
+</style>
+
+<div class="wrap">
+  <div class="row">
+    <div style="display:flex;flex-direction:column;align-items:center;">
+      <canvas id="big" width="256" height="256"></canvas>
+      <div class="lbl">64× zoom</div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;">
+      <canvas id="small" width="64" height="64"></canvas>
+      <div class="lbl">actual 8×8</div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="btn active" id="btnRun" onclick="setMode('run')">Run (toward)</button>
+    <button class="btn" id="btnLeft" onclick="setMode('left')">Strafe left</button>
+    <button class="btn" id="btnRight" onclick="setMode('right')">Strafe right</button>
+  </div>
+
+  <div style="display:flex;align-items:center;gap:10px;">
+    <span style="font-size:13px;color:var(--color-text-secondary);">Speed</span>
+    <input type="range" min="1" max="10" value="5" id="spd" style="width:100px;" step="1"/>
+  </div>
+
+  <div class="strip-row">
+    <div class="strip-group">
+      <canvas id="stripRun" width="256" height="32"></canvas>
+      <div class="lbl">run frames</div>
+    </div>
+    <div class="strip-group">
+      <canvas id="stripLeft" width="256" height="32"></canvas>
+      <div class="lbl">strafe left frames</div>
+    </div>
+    <div class="strip-group">
+      <canvas id="stripRight" width="256" height="32"></canvas>
+      <div class="lbl">strafe right frames</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const BG = '#111122';
+const HEAD = '#DDAA66';
+const BODY = '#3366AA';
+const LEG  = '#223355';
+const ARM  = '#CC7744';
+
+// Helper: set pixel in 8x8 grid
+function make() { return Array.from({length:8},()=>Array(8).fill(null)); }
+function s(g,r,c,col){ if(r>=0&&r<8&&c>=0&&c<8) g[r][c]=col; }
+
+// --- RUN TOWARD VIEWER (fixed distance, constant size ~5px tall, centred) ---
+// 4 frames, legs/arms alternate, figure stays same size
+function runFrame(phase) {
+  const g = make();
+  // head: rows 1-2, cols 3-4
+  s(g,1,3,HEAD); s(g,1,4,HEAD);
+  s(g,2,3,HEAD); s(g,2,4,HEAD);
+  // body: rows 3-4
+  s(g,3,2,BODY); s(g,3,3,BODY); s(g,3,4,BODY); s(g,3,5,BODY);
+  s(g,4,3,BODY); s(g,4,4,BODY);
+  // arms alternate
+  if(phase===0){ s(g,3,1,ARM); s(g,4,6,ARM); }
+  else         { s(g,3,6,ARM); s(g,4,1,ARM); }
+  // legs alternate
+  if(phase===0){
+    s(g,5,2,LEG); s(g,5,5,LEG);
+    s(g,6,1,LEG); s(g,6,6,LEG);
+  } else {
+    s(g,5,3,LEG); s(g,5,4,LEG);
+    s(g,6,3,LEG); s(g,6,5,LEG);
+  }
+  return g;
+}
+
+// --- STRAFE LEFT (side profile, walking left) ---
+// Figure faces left, legs/arms swing in profile
+function strafeLeftFrame(phase) {
+  const g = make();
+  // head (facing left): cols 2-3
+  s(g,1,2,HEAD); s(g,1,3,HEAD);
+  s(g,2,2,HEAD); s(g,2,3,HEAD);
+  // body
+  s(g,3,2,BODY); s(g,3,3,BODY); s(g,3,4,BODY);
+  s(g,4,2,BODY); s(g,4,3,BODY);
+  // arm swings front/back in profile
+  if(phase===0){ s(g,3,1,ARM); s(g,4,4,ARM); }
+  else         { s(g,3,4,ARM); s(g,4,1,ARM); }
+  // legs in stride
+  if(phase===0){
+    s(g,5,1,LEG); s(g,5,4,LEG);
+    s(g,6,0,LEG); s(g,6,4,LEG);
+    s(g,7,0,LEG);
+  } else {
+    s(g,5,2,LEG); s(g,5,3,LEG);
+    s(g,6,2,LEG); s(g,6,4,LEG);
+    s(g,7,3,LEG); s(g,7,5,LEG);
+  }
+  return g;
+}
+
+// --- STRAFE RIGHT (mirror of left) ---
+function mirrorH(g) {
+  return g.map(row => [...row].reverse());
+}
+
+function strafeRightFrame(phase) {
+  return mirrorH(strafeLeftFrame(phase));
+}
+
+// Build all frame sets (4 frames each for smoother walk cycle)
+const runFrames = [runFrame(0), runFrame(1), runFrame(0), runFrame(1)];
+const leftFrames = [strafeLeftFrame(0), strafeLeftFrame(1), strafeLeftFrame(0), strafeLeftFrame(1)];
+const rightFrames = [strafeRightFrame(0), strafeRightFrame(1), strafeRightFrame(0), strafeRightFrame(1)];
+
+const frameSets = { run: runFrames, left: leftFrames, right: rightFrames };
+
+// Draw
+function drawBg(ctx,w,h){ ctx.fillStyle=BG; ctx.fillRect(0,0,w,h); }
+
+function drawGrid(ctx, grid, ps, ox=0, oy=0) {
+  for(let r=0;r<8;r++) for(let c=0;c<8;c++) {
+    if(grid[r][c]) { ctx.fillStyle=grid[r][c]; ctx.fillRect(ox+c*ps, oy+r*ps, ps, ps); }
+  }
+}
+
+function drawGridLines(ctx, ps, ox=0, oy=0) {
+  ctx.strokeStyle='rgba(255,255,255,0.07)'; ctx.lineWidth=0.5;
+  for(let i=1;i<8;i++){
+    ctx.beginPath(); ctx.moveTo(ox+i*ps,oy); ctx.lineTo(ox+i*ps,oy+8*ps); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(ox,oy+i*ps); ctx.lineTo(ox+8*ps,oy+i*ps); ctx.stroke();
+  }
+}
+
+// Draw strips
+function drawStrip(canvasId, frames) {
+  const ctx = document.getElementById(canvasId).getContext('2d');
+  drawBg(ctx, 256, 32);
+  for(let f=0;f<frames.length;f++) drawGrid(ctx, frames[f], 4, f*32, 0);
+  ctx.strokeStyle='rgba(255,255,255,0.12)'; ctx.lineWidth=0.5;
+  for(let f=1;f<frames.length;f++){
+    ctx.beginPath(); ctx.moveTo(f*32,0); ctx.lineTo(f*32,32); ctx.stroke();
+  }
+}
+
+drawStrip('stripRun', runFrames);
+drawStrip('stripLeft', leftFrames);
+drawStrip('stripRight', rightFrames);
+
+// Animation
+let mode = 'run';
+let frame = 0, last = 0;
+
+function setMode(m) {
+  mode = m; frame = 0;
+  ['Run','Left','Right'].forEach(n => {
+    document.getElementById('btn'+n).classList.toggle('active', n.toLowerCase()===m||(m==='run'&&n==='Run'));
+  });
+  // fix button id mapping
+  document.getElementById('btnRun').classList.toggle('active', m==='run');
+  document.getElementById('btnLeft').classList.toggle('active', m==='left');
+  document.getElementById('btnRight').classList.toggle('active', m==='right');
+}
+
+const bigCtx   = document.getElementById('big').getContext('2d');
+const smallCtx = document.getElementById('small').getContext('2d');
+
+function loop(ts) {
+  const fps = parseInt(document.getElementById('spd').value) * 1.5 + 2;
+  if(ts - last > 1000/fps) {
+    last = ts;
+    const frames = frameSets[mode];
+    const f = frames[frame % frames.length];
+
+    drawBg(bigCtx,256,256);
+    drawGrid(bigCtx, f, 32);
+    drawGridLines(bigCtx, 32);
+
+    drawBg(smallCtx,64,64);
+    drawGrid(smallCtx, f, 8);
+
+    frame = (frame+1) % frames.length;
+  }
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+</script>
